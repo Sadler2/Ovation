@@ -1,0 +1,41 @@
+<html>
+<head>
+<link href="canvas.css" rel="stylesheet" type="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+
+<div class="keyboard">
+
+<div class="player">
+	<div class="btn_mouseplay" id="btn_mouseplay_off" onClick="chkMousePlayClick();"></div>
+	<textarea rows="13" cols="15" class="grayborder" id="chords_text"></textarea><br>
+	<div class="btn_play" id="btn_play_off" onClick="chkPlayClick();"></div>
+	<div class="btn_repeat" id="btn_repeat_off" onClick="chkRepeatClick();"></div>
+</div>
+
+
+	<div class='btn_reset' onClick="resetChord(true);"></div>
+	<div class='preload_progress'></div>
+	
+
+	<div id='chordTexts'>
+		<div class='chordText4' style='text-align: center; font-size: 20px;'></div>
+		<div class='chordText2' style='text-align: center; font-size: 12px;'></div>
+		<div class='chordText' style='text-align: center; font-size: 12px;'></div>
+		<div class='chordText3' style='text-align: center; font-size: 12px;'></div>
+	</div>
+</div>
+
+<script type="text/javascript" src="script.js"></script>
+
+<div class='chordTable'></div><br>
+
+<div class='copyright'>
+<div><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.ru"><img alt="Лицензия Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a></div>
+<div>Произведение «<span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type">Ovation</span>», публикуется на условиях <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.ru">лицензии Creative Commons Attribution-NonCommercial-ShareAlike (Атрибуция — Некоммерческое использование — С сохранением условий) 3.0 Непортированная</a>.</div>
+</div>
+
+</body>
+</html>
