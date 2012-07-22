@@ -62,8 +62,37 @@ body {
 
 .player {
 	display: block;
+	position: absolute;
+
 	margin-left: -130px;
+	float: left;
 }
+
+#guitarchord {
+	display: block;
+	position: absolute;
+
+	margin-left: 720px;
+	margin-top: 30px;
+	float: left;
+}
+
+.chordpreview {
+	display: block;
+	float: left;	
+}
+
+#guitarchords {
+	display: block;
+	height: 45px;
+	width: 90%;
+
+	margin-left: auto;
+	margin-right: auto;
+
+	overflow: hidden;
+}
+
 
 .chordtypetext {
 	font-size: 10px;

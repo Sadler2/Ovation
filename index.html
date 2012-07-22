@@ -8,6 +8,7 @@
 
 <div class="keyboard">
 
+
 <div class="player">
 	<div class="btn_mouseplay" id="btn_mouseplay_off" onClick="chkMousePlayClick();"></div>
 	<textarea rows="13" cols="15" class="grayborder" id="chords_text"></textarea><br>
@@ -15,6 +16,7 @@
 	<div class="btn_repeat" id="btn_repeat_off" onClick="chkRepeatClick();"></div>
 </div>
 
+<canvas class="grayborder"  id="guitarchord" width=150px height=190px></canvas>
 
 	<div class='btn_reset' onClick="resetChord(true);"></div>
 	<div class='preload_progress'></div>
@@ -28,6 +30,9 @@
 	</div>
 </div>
 
+<div class="grayborder" id="guitarchords"></div>
+
+<script type="text/javascript" src="guitar_chords.js"></script>
 <script type="text/javascript" src="script.js"></script>
 
 <div class='chordTable'></div><br>
@@ -46,6 +51,7 @@ screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
 " часа, посетителей за 24 часа и за сегодня' "+
 "border='0' width='88' height='31'><\/a>")
 //--></script><!--/LiveInternet-->
+
 
 </div>
 <div>Произведение «<span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type">Ovation</span>», публикуется на условиях <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.ru">лицензии Creative Commons Attribution-NonCommercial-ShareAlike (Атрибуция — Некоммерческое использование — С сохранением условий) 3.0 Непортированная</a>.</div>

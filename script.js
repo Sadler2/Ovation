@@ -23,6 +23,8 @@ var chordText3;
 var chordText4;
 var btnRepeat;
 var btnMousePlay;
+var chordPreviews;
+var guitarchord;
 
 var keyboard;
 var chordTable;
@@ -118,6 +120,15 @@ genChord = function(intervals, note) {
 
 }
 
+drawGuitarChord = function(data) {
+	guitarchord.data = data;
+	drawChord(guitarchord);
+}
+
+drawGuitarChordEvent = function() {
+	drawGuitarChord(this.data);
+}
+
 // нарисовать таблицу аккордов
 genChordTable = function() {
         var str = '';
@@ -190,7 +201,14 @@ isWhite = function(key) {
 
 audioPreload = function() {
 	
-	audio_preload.setAttribute('src', 'audio/'+preload_num+'.ogg');
+	if (audio_preload.canPlayType('audio/mpeg;')) {
+		audio_preload.setAttribute('src', 'audio/mp3/'+preload_num+'.mp3');
+	}
+	else
+	{
+		audio_preload.setAttribute('src', 'audio/ogg/'+preload_num+'.ogg');
+	}
+
 	preload_num++;
 	preload_progress.style.width = preload_num/49.0*160;
 }
@@ -213,6 +231,9 @@ window.onload = function() {
 	keyboard = document.getElementsByClassName('keyboard')[0];
 
 	chordtextarea = document.getElementById('chords_text');
+
+	guitarchord = document.getElementById('guitarchord');
+
 
 	chordtextarea.value = 'A 1,C 2,E 2\nSleep 2000\nE,G,B\nSleep 2000';
 
@@ -266,6 +287,32 @@ window.onload = function() {
         }
 
 	genChordTable();
+
+
+	chordPreviews = new Array();
+
+	var previewBlock = document.getElementById('guitarchords');
+
+	var precount = screen.width*2/50;
+	
+	for (var i=0;i<precount;i++) {
+
+		var canvas = document.createElement('canvas');
+		canvas.setAttribute('class','chordpreview');
+		canvas.id = 'chordpreview'+i;
+		canvas.width = 50;
+		canvas.height = 50;
+		canvas.data = '';
+
+		canvas.onclick = drawGuitarChordEvent;
+
+		previewBlock.appendChild(canvas);		
+
+		chordPreviews.push(canvas);
+	}
+
+
+	
 };
 
 function arrays_equal(a,b) { return !!a && !!b && !(a<b || b<a); }
@@ -274,7 +321,13 @@ function arrays_equal(a,b) { return !!a && !!b && !(a<b || b<a); }
 
 
 playNote = function(id) {
-	playSound('audio/'+id+'.ogg');
+	if (audio_preload.canPlayType('audio/mpeg;')) {	
+		playSound('audio/mp3/'+id+'.mp3');
+	}
+	else
+	{
+		playSound('audio/ogg/'+id+'.ogg');
+	}
 }
 
 stopAllNotes = function() {
@@ -434,4 +487,28 @@ updateChord = function() {
 		chordText3.innerHTML = ' ';
 		chordText4.innerHTML = ' ';
 	}
+
+	var notes_octave = new Array();	
+	for (var i=0;i<notes.length;i++) notes_octave[i] = notes[i]%12;
+
+
+	if (!chkMousePlay)
+	{
+
+		var apps = getChordApps(notes_octave);
+		
+		for (var i=0;i<chordPreviews.length;i++)
+		{
+			if (apps[i] === undefined) chordPreviews[i].data = '-1,-1,-1,-1,-1,-1';
+			else chordPreviews[i].data = apps[i][0].join(',');
+		
+			drawChord(chordPreviews[i]);
+		}
+	
+		var view = undefined;
+		if (apps.length>0) view = apps[0][0].join(',');
+		if (view === undefined) view = '-1,-1,-1,-1,-1,-1';
+		drawGuitarChord(view);
+	}
+
 }
