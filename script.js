@@ -201,7 +201,7 @@ isWhite = function(key) {
 
 audioPreload = function() {
 	
-	if (audio_preload.canPlayType('audio/mpeg;')) {
+	if (audio_preload.canPlayType ===undefined || audio_preload.canPlayType('audio/mpeg;')) {
 		audio_preload.setAttribute('src', 'audio/mp3/'+preload_num+'.mp3');
 	}
 	else
@@ -321,7 +321,7 @@ function arrays_equal(a,b) { return !!a && !!b && !(a<b || b<a); }
 
 
 playNote = function(id) {
-	if (audio_preload.canPlayType('audio/mpeg;')) {	
+	if (audio_preload.canPlayType === undefined || audio_preload.canPlayType('audio/mpeg;')) {	
 		playSound('audio/mp3/'+id+'.mp3');
 	}
 	else
