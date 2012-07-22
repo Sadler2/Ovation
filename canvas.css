@@ -14,6 +14,25 @@ body {
 	resize: none;
 }
 
+.slider {
+	background: url('images/slider_left.png'), url('images/slider_right.png'), url('images/slider_center.png');
+	background-repeat: no-repeat, no-repeat, repeat-x;
+	background-position: left center, right center, center center;
+	z-index:200;
+}
+
+.slider_box {
+	background: url('images/slider_box.png') no-repeat center center;
+
+	margin-top: -3px;
+
+	width: 20px;
+	height: 20px;
+	z-index:210;
+
+	cursor:pointer;
+}
+
 .copyright {
 	color: #959595;
 	margin-left: auto;
@@ -80,6 +99,7 @@ body {
 .chordpreview {
 	display: block;
 	float: left;	
+	cursor:pointer;
 }
 
 #guitarchords {
@@ -155,6 +175,7 @@ body {
 
 	z-index: 30;
 	background-image:url('images/key_white.png');
+	cursor:pointer;
 }
 
 .key_black {
@@ -168,6 +189,7 @@ body {
 
 	z-index: 40;
 	background-image:url('images/key_black.png');
+	cursor:pointer;
 }
 
 .btn_reset {
@@ -182,7 +204,7 @@ body {
 
 	z-index: 60;
 	background-image:url('images/btn_reset.png');
-	
+	cursor:pointer;	
 }
 
 .preload_progress {
@@ -213,6 +235,7 @@ body {
 
 	z-index: 31;
 	background-image:url('images/key_white_down.png');
+	cursor:pointer;
 }
 
 .key_black_down {
@@ -226,6 +249,7 @@ body {
 
 	z-index: 41;
 	background-image:url('images/key_black_down.png');
+	cursor:pointer;
 }
 
 .btn_repeat {
@@ -235,6 +259,7 @@ body {
 	float: left;
 	margin-top: 4px;
 	background-image:url('images/btn_repeat.png');
+	cursor:pointer;
 }
 
 #btn_repeat_off {
@@ -258,7 +283,7 @@ body {
 	margin-right: 30px;
 
 	background-image:url('images/btn_play.png');
-	
+	cursor:pointer;	
 }
 
 .btn_mouseplay {
@@ -270,6 +295,7 @@ body {
 	background-image:url('images/btn_mouseplay.png');
 	background-repeat:no-repeat;
 	background-position:left bottom;
+	cursor:pointer;
 }
 
 #btn_mouseplay_off {
@@ -295,7 +321,6 @@ body {
 	opacity: 1.0;
 	
 }
-
 
 
 

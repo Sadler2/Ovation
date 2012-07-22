@@ -200,10 +200,9 @@ getChordApps = function(notes) {
 		}
 
 		if (bass_note != notes[0]) continue; // не берём аккорды с изменённой линией баса
+		if (notes2.length>0) continue; // если аккорд неполный
 
 		var chord_height = chmax-chmin;
-
-		if (notes2.length>0) continue; // если аккорд неполный
 
 		var cwmin = spectre.length;
 		var cwmax = 0;
@@ -233,7 +232,7 @@ getChordApps = function(notes) {
 
 		var difficulty = chord_width*chord_height+spnum*20+barre*10+deads*10+alone_deads*100+cwmin*3+picks*3;
 
-		chords.push([chord,difficulty,spnum]);
+		chords.push([chord,difficulty]);
 
 		
 		num++;

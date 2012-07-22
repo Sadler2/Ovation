@@ -67,7 +67,7 @@ var chordsBase = [
 ['большая септима',[11],' - Б7'],
 ['октава',[12],' - О'],
 ['малая нона',[13],' - М9'],
-['большая нона',[13],' - Б9'],
+['большая нона',[13],' - Б9']
 ];
 
 chkPlayClick = function() {
@@ -213,26 +213,48 @@ audioPreload = function() {
 	preload_progress.style.width = preload_num/49.0*160;
 }
 
+setVolume = function(volume) {
+	for (var i=0;i<audios.length;i++)
+		audios[i].volume = volume;
+}
+
+setVolumeEvent = function(event, ui) {
+
+	var poffset = $(this).parent().offset();
+	var offset = $(this).offset();	
+
+	var vol = (offset.left-poffset.left)/80.0; //FIXME
+	
+	setVolume(vol);
+}
+
 
 window.onload = function() {
 
+	$( ".slider_box" ).draggable({ containment: "parent" });
+	$( ".slider_box" ).draggable({ disabled: false });
 
-	chordText = document.getElementsByClassName('chordText')[0];
-	chordText2 = document.getElementsByClassName('chordText2')[0];
-	chordText3 = document.getElementsByClassName('chordText3')[0];
-	chordText4 = document.getElementsByClassName('chordText4')[0];
-	chordTable = document.getElementsByClassName('chordTable')[0];
-	btnRepeat = document.getElementsByClassName('btn_repeat')[0];	
-	btnMousePlay = document.getElementsByClassName('btn_mouseplay')[0];	
-	btnPlay = document.getElementsByClassName('btn_play')[0];	
+	$( "#slider_volume" ).draggable({
+	   drag: setVolumeEvent
+	});
 
-	preload_progress =  document.getElementsByClassName('preload_progress')[0];
 
-	keyboard = document.getElementsByClassName('keyboard')[0];
+	chordText = $('.chordText')[0];//document.getElementsByClassName('chordText')[0];
+	chordText2 = $('.chordText2')[0];//document.getElementsByClassName('chordText2')[0];
+	chordText3 = $('.chordText3')[0];//document.getElementsByClassName('chordText3')[0];
+	chordText4 = $('.chordText4')[0];//document.getElementsByClassName('chordText4')[0];
+	chordTable = $('.chordTable')[0];//document.getElementsByClassName('chordTable')[0];
+	btnRepeat = $('.btn_repeat')[0];//document.getElementsByClassName('btn_repeat')[0];	
+	btnMousePlay = $('.btn_mouseplay')[0];//document.getElementsByClassName('btn_mouseplay')[0];	
+	btnPlay = $('.btn_play')[0];//document.getElementsByClassName('btn_play')[0];	
 
-	chordtextarea = document.getElementById('chords_text');
+	preload_progress = $('.preload_progress')[0]; //document.getElementsByClassName('preload_progress')[0];
 
-	guitarchord = document.getElementById('guitarchord');
+	keyboard = $('.keyboard')[0]; //document.getElementsByClassName('keyboard')[0];
+
+	chordtextarea = $('#chords_text')[0]; //document.getElementById('chords_text');
+
+	guitarchord = $('#guitarchord')[0]; //document.getElementById('guitarchord');
 
 
 	chordtextarea.value = 'A 1,C 2,E 2\nSleep 2000\nE,G,B\nSleep 2000';
@@ -240,10 +262,14 @@ window.onload = function() {
 
 	audio_preload = document.createElement("audio");
 	audio_preload.preload = 'auto';
-	audio_preload.addEventListener("canplaythrough", function () {
-	 if (preload_num<49) audioPreload(preload_num);	 
-	}, false);
-	audioPreload();
+	
+	if (audio_preload.addEventListener !== undefined)
+	{
+		audio_preload.addEventListener("canplaythrough", function () {
+		 if (preload_num<49) audioPreload(preload_num);	 
+		}, false);
+		audioPreload();
+	}
 
 
 
@@ -254,6 +280,7 @@ window.onload = function() {
 	}
 
 	
+	setVolume(0);
 
 	var wkn = 0;
 	
@@ -489,7 +516,11 @@ updateChord = function() {
 	}
 
 	var notes_octave = new Array();	
-	for (var i=0;i<notes.length;i++) notes_octave[i] = notes[i]%12;
+	for (var i=0;i<notes.length;i++) 
+	{
+		var n = notes[i]%12;
+		if (notes_octave.indexOf(n) == -1) notes_octave.push(n);
+	}
 
 
 	if (!chkMousePlay)
