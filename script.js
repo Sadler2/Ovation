@@ -280,7 +280,7 @@ window.onload = function() {
 	}
 
 	
-	setVolume(0);
+	setVolume(0.5);
 
 	var wkn = 0;
 	

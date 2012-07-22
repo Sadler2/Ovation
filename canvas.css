@@ -22,6 +22,7 @@ body {
 }
 
 .slider_box {
+	position: relative;
 	background: url('images/slider_box.png') no-repeat center center;
 
 	margin-top: -3px;
