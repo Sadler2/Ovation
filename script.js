@@ -100,7 +100,7 @@ chkMousePlayClick = function() {
 
 playSound = function(sound) {
 	audios[rraudio].setAttribute('src', sound);
-	audios[rraudio].play();
+	if (audios[rraudio].play !== undefined) audios[rraudio].play();
 	rraudio = (rraudio+1)%audios.length;
 }
 
