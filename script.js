@@ -70,6 +70,31 @@ var chordsBase = [
 ['большая нона',[13],' - Б9']
 ];
 
+var chords_worker = new Worker('guitar_chords_worker.js');
+
+chords_worker.onmessage = function(event) {
+	var apps = event.data;
+		
+		for (var i=0;i<chordPreviews.length;i++)
+		{
+			if (apps[i] === undefined) chordPreviews[i].data = '-1,-1,-1,-1,-1,-1';
+			else chordPreviews[i].data = apps[i][0].join(',');
+		
+			drawChord(chordPreviews[i]);
+		}
+	
+		var view = undefined;
+		if (apps.length>0) view = apps[0][0].join(',');
+		if (view === undefined) view = '-1,-1,-1,-1,-1,-1';
+		drawGuitarChord(view);
+
+}
+
+updateChordsList = function(chord) {
+	chords_worker.postMessage(chord);
+}
+
+
 chkPlayClick = function() {
 	chkPlay = !chkPlay;
 	if (chkPlay) playTextChords();
@@ -93,7 +118,11 @@ chkRepeatClick = function() {
 chkMousePlayClick = function() {
 	chkMousePlay = !chkMousePlay;
 
-	if (chkMousePlay) btnMousePlay.setAttribute('id', 'btn_mouseplay_on');
+	if (chkMousePlay) 
+	{
+		btnMousePlay.setAttribute('id', 'btn_mouseplay_on');
+		updateChordsList(dead_chord);
+	}
 	else btnMousePlay.setAttribute('id', 'btn_mouseplay_off');
 
 }
@@ -525,21 +554,7 @@ updateChord = function() {
 
 	if (!chkMousePlay)
 	{
-
-		var apps = getChordApps(notes_octave);
-		
-		for (var i=0;i<chordPreviews.length;i++)
-		{
-			if (apps[i] === undefined) chordPreviews[i].data = '-1,-1,-1,-1,-1,-1';
-			else chordPreviews[i].data = apps[i][0].join(',');
-		
-			drawChord(chordPreviews[i]);
-		}
-	
-		var view = undefined;
-		if (apps.length>0) view = apps[0][0].join(',');
-		if (view === undefined) view = '-1,-1,-1,-1,-1,-1';
-		drawGuitarChord(view);
+		updateChordsList(notes_octave);
 	}
 
 }
