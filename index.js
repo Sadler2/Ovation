@@ -14,6 +14,8 @@ var chkRepeat = false;
 var chkMousePlay = false;
 var chkPlay = false;
 
+var notes_octave = new Array();
+var chord_name = "";
 
 // ----------------- Элементы окна -----------------------------
 
@@ -273,6 +275,9 @@ setVolumeEvent = function(event, ui) {
 	setVolume(vol);
 }
 
+openPrintPage = function() {
+	window.open('chords.html?notes='+notes_octave.join(',')+'&title='+encodeURI(chord_name));
+}
 
 window.onload = function() {
 
@@ -303,6 +308,7 @@ window.onload = function() {
 
 	guitarchord.addEventListener('click', onGuitarChordClick, false);
 	guitarchord.hides = false;
+	guitarchord.print = false;
 
 
 	chordtextarea.value = 'A 1,C 2,E 2\nSleep 2000\nE,G,B\nSleep 2000';
@@ -379,6 +385,7 @@ window.onload = function() {
 		canvas.height = 50;
 		canvas.data = '';
 		canvas.hides = true;
+		canvas.print = false;
 
 		canvas.onclick = drawGuitarChordEvent;		
 
@@ -549,7 +556,8 @@ updateChord = function() {
 
 	}
 
-	var notes_octave = new Array();	
+	notes_octave = new Array();	
+
 	for (var i=0;i<notes.length;i++) 
 	{
 		var n = notes[i]%12;
@@ -577,8 +585,15 @@ updateChord = function() {
 	var str = '<a href="#" onClick="setChord(\''+notes.join(',')+'\',0,true)">';
 
 	if (chordData && notes_func.length>0) 
-		str += chordData[0] + ' ' + keyNameById(notes_func[0])+chordData[2];
-	else str += 'неизвестный аккорд';
+	{
+		chord_name = chordData[0] + ' ' + keyNameById(notes_func[0])+chordData[2];
+		str += chord_name;
+	}
+	else 
+	{
+		str += 'неизвестный аккорд';
+		chord_name = '';
+	}
 
 	str += '</a>';
 	chordText4.innerHTML = str;

@@ -124,7 +124,9 @@ drawChord = function(canvas) {
 	var w = canvas.width;
 	var h = canvas.height;
 
-	ctx.fillStyle="#F5F5F5";
+	if (canvas.print) ctx.fillStyle="#FFFFFF";
+	else ctx.fillStyle="#F5F5F5";
+
 	ctx.fillRect(0,0,w,h);
 
 	if (canvas.hides && arrays_equal(dead_chord,notes)) return; // dead chord
