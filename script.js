@@ -31,6 +31,8 @@ var chordTable;
 var chordtextarea;
 var preload_progress;
 
+var restrictUpdateGuitarChord;
+
 // --------------------------------------------------------------
 
 var chordsBase = [
@@ -83,15 +85,18 @@ chords_worker.onmessage = function(event) {
 			drawChord(chordPreviews[i]);
 		}
 	
+		
+
 		var view = undefined;
 		if (apps.length>0) view = apps[0][0].join(',');
 		if (view === undefined) view = '-1,-1,-1,-1,-1,-1';
+
 		drawGuitarChord(view);
 
 }
 
 updateChordsList = function(chord) {
-	chords_worker.postMessage(chord);
+	chords_worker.postMessage(chord);	
 }
 
 
@@ -150,11 +155,16 @@ genChord = function(intervals, note) {
 }
 
 drawGuitarChord = function(data) {
-	guitarchord.data = data;
-	drawChord(guitarchord);
+
+	if (!restrictUpdateGuitarChord)
+	{
+		guitarchord.data = data;
+		drawChord(guitarchord);
+	}
 }
 
 drawGuitarChordEvent = function() {
+	restrictUpdateGuitarChord = false;
 	drawGuitarChord(this.data);
 }
 
@@ -197,6 +207,8 @@ genChordTable = function() {
 resetChord = function(stopnotes) {
 	for (var i=0;i<49;i++) keydown[i] = false;		
 	if (stopnotes) stopAllNotes();
+
+	guitarchord.data = dead_chord.join(',');
 	updateChord();
 }
 
@@ -205,13 +217,16 @@ keyMouseUp = function() {
 }
 
 // нажать ноты, переданные в notes, сместив их на octave.
-setChord = function(notes,octave) {
+setChord = function(notes,octave, restrict) {
 
 	if (octave === undefined) octave = 1;
 
 	resetChord();	
 
-	var notes2 = notes.split(",");
+	var notes2 = notes;
+
+	if (typeof(notes)=='string') notes2 = notes2.split(",");
+
 	for (var i=0;i<notes2.length;i++) 
 	{
 		var nn = parseInt(notes2[i])+12*octave;
@@ -219,6 +234,7 @@ setChord = function(notes,octave) {
 		playNote(nn);
 	}
 
+	restrictUpdateGuitarChord = restrict;
 	updateChord();
 }
 
@@ -284,6 +300,9 @@ window.onload = function() {
 	chordtextarea = $('#chords_text')[0]; //document.getElementById('chords_text');
 
 	guitarchord = $('#guitarchord')[0]; //document.getElementById('guitarchord');
+
+	guitarchord.addEventListener('click', onGuitarChordClick, false);
+	guitarchord.hides = false;
 
 
 	chordtextarea.value = 'A 1,C 2,E 2\nSleep 2000\nE,G,B\nSleep 2000';
@@ -359,8 +378,9 @@ window.onload = function() {
 		canvas.width = 50;
 		canvas.height = 50;
 		canvas.data = '';
+		canvas.hides = true;
 
-		canvas.onclick = drawGuitarChordEvent;
+		canvas.onclick = drawGuitarChordEvent;		
 
 		previewBlock.appendChild(canvas);		
 
@@ -368,6 +388,8 @@ window.onload = function() {
 	}
 
 
+	guitarchord.data = dead_chord.join(',');
+	drawChord(guitarchord);
 	
 };
 
@@ -454,6 +476,7 @@ keyClick = function(event) {
 
 	if (keydown[keyId]) playNote(keyId);
 
+	restrictUpdateGuitarChord = false;
 	updateChord();
 }
 
@@ -493,12 +516,25 @@ chordDataByIntervals = function(intervals) {
 // обновление всех данных об аккорде
 updateChord = function() {
 	var notes = new Array();	
+	var notes_func = new Array();
+	var notes_be = new Array();
+
+	for (var i=0;i<12;i++) notes_be[i] = false;
+
 	for (var i=0;i<49;i++)	
 	{              	
 		var wh = isWhite(i);
 		if (keydown[i]) 
 		{
 			notes.push(i);
+
+			if (!notes_be[i%12])
+			{
+				notes_func.push(i);
+				notes_be[i%12] = true;
+			}
+
+
 	                if (wh)  keys[i].setAttribute("class","key_white_down");
 			else
 			keys[i].setAttribute("class","key_black_down");
@@ -513,42 +549,43 @@ updateChord = function() {
 
 	}
 
-	var intervals = new Array();
-	for (var i=1;i<notes.length;i++) intervals.push(notes[i]-notes[i-1]);
-
-	if (intervals.length>0) chordText.innerHTML='Формула: '+intervalNameBySize(intervals[0]);
-	else chordText.innerHTML=' ';
-	if (notes.length>0) chordText2.innerHTML=keyNameById(notes[0]);
-	else chordText2.innerHTML=' ';
-
-	for (var i=1;i<intervals.length;i++) chordText.innerHTML += ' + '+intervalNameBySize(intervals[i]);
-	for (var i=1;i<notes.length;i++) chordText2.innerHTML += ' + '+keyNameById(notes[i]);
-
-	var tp = chordTypeByLength(notes.length);
-	chordText3.innerHTML = 'Звуков: '+notes.length;
-	if (tp.length>0) chordText3.innerHTML += ' ('+tp+')';
-
-	var chordData = chordDataByIntervals(intervals);
-
-	var str = '<a href="#" onClick="setChord(\''+notes.join(',')+'\',0)">';
-
-	if (chordData && notes.length>0) 
-		str += chordData[0] + ' ' + keyNameById(notes[0])+chordData[2];
-	else str += 'неизвестный аккорд';
-
-	str += '</a>';
-	chordText4.innerHTML = str;
-
-	if (notes.length==0) {
-		chordText3.innerHTML = ' ';
-		chordText4.innerHTML = ' ';
-	}
-
 	var notes_octave = new Array();	
 	for (var i=0;i<notes.length;i++) 
 	{
 		var n = notes[i]%12;
 		if (notes_octave.indexOf(n) == -1) notes_octave.push(n);
+	}
+
+
+	var intervals = new Array();
+	for (var i=1;i<notes_func.length;i++) intervals.push(notes_func[i]-notes_func[i-1]);
+
+	if (intervals.length>0) chordText.innerHTML='Формула: '+intervalNameBySize(intervals[0]);
+	else chordText.innerHTML=' ';
+	if (notes_func.length>0) chordText2.innerHTML=keyNameById(notes_func[0]);
+	else chordText2.innerHTML=' ';
+
+	for (var i=1;i<intervals.length;i++) chordText.innerHTML += ' + '+intervalNameBySize(intervals[i]);
+	for (var i=1;i<notes_func.length;i++) chordText2.innerHTML += ' + '+keyNameById(notes_func[i]);
+
+	var tp = chordTypeByLength(notes_func.length);
+	chordText3.innerHTML = 'Звуков: '+notes_func.length;
+//	if (tp.length>0) chordText3.innerHTML += ' ('+tp+')';
+
+	var chordData = chordDataByIntervals(intervals);
+
+	var str = '<a href="#" onClick="setChord(\''+notes.join(',')+'\',0,true)">';
+
+	if (chordData && notes_func.length>0) 
+		str += chordData[0] + ' ' + keyNameById(notes_func[0])+chordData[2];
+	else str += 'неизвестный аккорд';
+
+	str += '</a>';
+	chordText4.innerHTML = str;
+
+	if (notes_func.length==0) {
+		chordText3.innerHTML = ' ';
+		chordText4.innerHTML = ' ';
 	}
 
 

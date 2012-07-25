@@ -2,7 +2,7 @@ function arrays_equal(a,b) { return !!a && !!b && !(a<b || b<a); }
 
 //                0   1    2   3    4   5   6    7   8    9   10   11
 var notenames = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-var stroy = [4,9,2,7,11,4];
+var stroy = [4,9,14,19,23,28];
 
 var dead_chord = [-1,-1,-1,-1,-1,-1];
 
@@ -11,8 +11,76 @@ noteByApp = function(app,struna) {
 	return (app+stroy[struna])%notenames.length;
 }
 
+function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect(), root = document.documentElement;
 
-drawChord = function(canvas) {
+        // return relative mouse position
+        var mouseX = evt.clientX - rect.left - root.scrollLeft;
+        var mouseY = evt.clientY - rect.top - root.scrollTop;
+        return {
+          x: mouseX,
+          y: mouseY
+        };
+}
+
+setGuitarChord = function(canvas, notes) {
+		var notes2 = new Array();
+		for (var i=0;i<notes.length;i++)
+		{
+			if (notes[i]>0) notes2.push(stroy[i]+notes[i]);			
+			else
+			if (notes[i]==0) notes2.push(stroy[i]);			
+		}
+
+		notes2 = notes2.join(',');
+		setChord(notes2, 0, true);
+		canvas.data = notes.join(",");
+		drawChord(canvas);
+
+}
+
+onGuitarChordClick = function (e) {
+	var mouse = getMousePos(this,e);
+	mouse.x = Math.ceil(mouse.x*8/this.width);
+	mouse.y = Math.ceil(mouse.y*7/this.height);
+
+	var notes = this.data.split(",");
+
+	for (var i=0;i<notes.length;i++) notes[i] = parseInt(notes[i]);
+
+	var old_data = this.data;
+	var mm = getMinMaxNotes(this);
+
+
+	if (mouse.x>=3 && mouse.x<=8)
+	{
+		if (mouse.y>=1 && mouse.y<=6)
+		{
+			var struna = mouse.x-3;
+			var lad = mouse.y-2+mm.min;
+			if (mouse.y == 1) 
+			{
+				if (notes[struna] != 0) lad = 0;
+				else lad = -1;
+			}
+
+			if (struna<notes.length) if (notes[struna] != lad) notes[struna] = lad;
+			else notes[struna] = -1;
+		}
+	}
+
+
+	this.data = notes.join(",");
+	if (this.data != old_data) 
+	{
+		setGuitarChord(this,notes);
+	}
+
+//	alert(mouse.x+' '+mouse.y);
+}
+
+
+getMinMaxNotes = function(canvas) {
 
 	var notes = canvas.data.split(",");
 
@@ -26,12 +94,31 @@ drawChord = function(canvas) {
 		if (notes[i]>maxnote) maxnote = notes[i];
 	}
 
-
 	var chord_width = maxnote-minnote;
 
 	minnote -= 4-chord_width;
 
 	if (minnote<1) minnote=1;
+
+        return {
+          min: minnote,
+          max: maxnote
+        };
+	
+}
+
+
+drawChord = function(canvas) {
+
+	var notes = canvas.data.split(",");
+
+	var mm = getMinMaxNotes(canvas);
+
+	var minnote = mm.min;
+	var maxnote = mm.max;
+
+	for (var i=0;i<notes.length;i++) notes[i] = parseInt(notes[i]);
+	var chord_width = maxnote-minnote;
 
 	var ctx=canvas.getContext("2d");
 	var w = canvas.width;
@@ -40,7 +127,7 @@ drawChord = function(canvas) {
 	ctx.fillStyle="#F5F5F5";
 	ctx.fillRect(0,0,w,h);
 
-	if (arrays_equal(dead_chord,notes)) return; // dead chord
+	if (canvas.hides && arrays_equal(dead_chord,notes)) return; // dead chord
 	
 	var wdist = w/8;
 	var hdist = h/7;

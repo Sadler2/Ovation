@@ -1,5 +1,5 @@
 var notenames = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-var stroy = [4,9,2,7,11,4];
+var stroy = [4,9,14,19,23,28];
 
 noteByApp = function(app,struna) {
 	return (app+stroy[struna])%notenames.length;
